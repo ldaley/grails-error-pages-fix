@@ -1,0 +1,1 @@
+This plugin is backport of the fix for [GRAILS-6992](http://jira.codehaus.org/browse/GRAILS-6992 "[#GRAILS-6992] All request parameters are cleared between rendering the view and layout decoration in error handlers - jira.codehaus.org") to the 1.3 line of Grails. It will be fixed natively in 1.4.
