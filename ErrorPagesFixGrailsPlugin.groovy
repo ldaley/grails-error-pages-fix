@@ -20,7 +20,7 @@ class ErrorPagesFixGrailsPlugin {
 	def author = "Luke Daley"
 	def authorEmail = "ld@ldaley.com"
 	
-	def version = "0.1"
+	def version = "0.2"
 	def grailsVersion = "1.3.* > *" // no higher than 1.3.x
 	def dependsOn = [:]
 	def loadAfter = ["controllers", "urlMappings"]

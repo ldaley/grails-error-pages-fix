@@ -99,37 +99,28 @@ public class PatchedErrorHandlingServlet extends GrailsDispatcherServlet {
         final UrlMappingInfo urlMappingInfo = matchedInfo;
 
         if (urlMappingInfo != null) {
-            GrailsWebRequestFilter grailsWebRequestFilter = new GrailsWebRequestFilter();
-            grailsWebRequestFilter.setServletContext(getServletContext());
-            grailsWebRequestFilter.initialize();
-            grailsWebRequestFilter.doFilter(request, response, new FilterChain() {
+            final GrailsWebRequest webRequest = (GrailsWebRequest) RequestContextHolder.getRequestAttributes();
+            request.setAttribute("com.opensymphony.sitemesh.APPLIED_ONCE", null);
+            urlMappingInfo.configure(webRequest);
 
-                @SuppressWarnings("unchecked")
-                public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
-                    final GrailsWebRequest webRequest = (GrailsWebRequest) RequestContextHolder.getRequestAttributes();
-                    servletRequest.setAttribute("com.opensymphony.sitemesh.APPLIED_ONCE", null);
-                    urlMappingInfo.configure(webRequest);
-
-                    String viewName = urlMappingInfo.getViewName();
-                    if (viewName == null || viewName.endsWith(GSP_SUFFIX) || viewName.endsWith(JSP_SUFFIX)) {
-                        WebUtils.forwardRequestForUrlMappingInfo(request, response, urlMappingInfo, Collections.EMPTY_MAP);
+            String viewName = urlMappingInfo.getViewName();
+            if (viewName == null || viewName.endsWith(GSP_SUFFIX) || viewName.endsWith(JSP_SUFFIX)) {
+                WebUtils.forwardRequestForUrlMappingInfo(request, response, urlMappingInfo, Collections.EMPTY_MAP);
+            }
+            else {
+                ViewResolver viewResolver = WebUtils.lookupViewResolver(getServletContext());
+                if (viewResolver != null) {
+                    View v;
+                    try {
+                        v = WebUtils.resolveView(request, urlMappingInfo, viewName, viewResolver);
+                        IncludeResponseWrapper includeResponse = new IncludeResponseWrapper(response);
+                        v.render(Collections.EMPTY_MAP, request, response);
                     }
-                    else {
-                        ViewResolver viewResolver = WebUtils.lookupViewResolver(getServletContext());
-                        if (viewResolver != null) {
-                            View v;
-                            try {
-                                v = WebUtils.resolveView(request, urlMappingInfo, viewName, viewResolver);
-                                IncludeResponseWrapper includeResponse = new IncludeResponseWrapper(response);
-                                v.render(Collections.EMPTY_MAP, request, response);
-                            }
-                            catch (Exception e) {
-                                throw new UrlMappingException("Error mapping onto view ["+viewName+"]: " + e.getMessage(),e);
-                            }
-                        }
+                    catch (Exception e) {
+                        throw new UrlMappingException("Error mapping onto view ["+viewName+"]: " + e.getMessage(),e);
                     }
                 }
-            });
+            }
         }
         else {
             renderDefaultResponse(response, statusCode);

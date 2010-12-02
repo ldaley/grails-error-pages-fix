@@ -18,6 +18,7 @@ import groovy.xml.StreamingMarkupBuilder
 eventWebXmlEnd = { String tmpfile ->
 	def xml = new XmlSlurper().parse(webXmlFile)
 	
+	
 	def errorServlet = xml."**".find { 
 		it.'servlet-class'[0].text() == "org.codehaus.groovy.grails.web.servlet.ErrorHandlingServlet"
 	}
@@ -34,6 +35,15 @@ eventWebXmlEnd = { String tmpfile ->
 	sitemeshFilter.appendNode { 
 		dispatcher("ERROR") 
 		dispatcher("REQUEST") 
+	}
+
+
+	def webRequestFilter = xml."filter-mapping".find { it."filter-name" == "grailsWebRequest" }
+	if (!webRequestFilter) {
+		throw new RuntimeException("could not find webrequest filter in xml")
+	}
+	webRequestFilter.appendNode { 
+		dispatcher("ERROR") 
 	}
 	
 	
