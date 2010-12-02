@@ -1,1 +1,3 @@
-This plugin is backport of the fix for [GRAILS-6992](http://jira.codehaus.org/browse/GRAILS-6992 "[#GRAILS-6992] All request parameters are cleared between rendering the view and layout decoration in error handlers - jira.codehaus.org") to the 1.3 line of Grails. It will be fixed natively in 1.4.
+This plugin is backport of the fix for [GRAILS-6992](http://jira.codehaus.org/browse/GRAILS-6992 "[#GRAILS-6992] All request parameters are cleared between rendering the view and layout decoration in error handlers - jira.codehaus.org") and [GRAILS-6987](http://jira.codehaus.org/browse/GRAILS-6987 "[#GRAILS-6987] Exceptions thrown during exception handlers cause exception to be logged in GrailsDispatcherServlet about no thread bound request - jira.codehaus.org") to the 1.3 line of Grails. It will be fixed natively in 1.4.
+
+The plugin works by modifying the web.xml deployment descriptor, and by installing a different servlet to deal with errors.
